@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         WindowStyle="None"
         Loaded="Window_Loaded"
-        Height="200" Width="200"
+        Height="150" Width="150"
         Background="{x:Null}"
         AllowsTransparency="True"
         KeyDown="Window_KeyDown"

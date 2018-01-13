@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +27,7 @@ namespace WpfApp1
 
         private bool isMove = false;
         private Point lastPoint;
+        private bool isProcess = false;
 
         private const double MOUSE_MOVE_OPACITY = 0.6;
         private const double MOUSE_LEAVE_OPCAITY = 0.3;
@@ -69,7 +72,20 @@ namespace WpfApp1
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             buttonImage.Opacity = 1;
-            MessageBox.Show("click", "event", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            //MessageBox.Show("click", "event", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (isProcess)
+            {
+                return;
+            }
+
+            Thread t1 = new Thread(new ThreadStart(this.startTask));
+            t1.IsBackground = true;
+            t1.Start();
+
+            isProcess = true;
+
+
         }
 
         private void Button_MouseMove(object sender, MouseEventArgs e)
@@ -117,5 +133,39 @@ namespace WpfApp1
         {
             buttonImage.Opacity = MOUSE_LEAVE_OPCAITY;
         }
+
+
+        private void startTask()
+        {
+            var shot = new Shoter("X");
+            var bmp = shot.GetProcPhoto();
+            if (bmp == null)
+            {
+                MessageBox.Show("获取图片失败", "", MessageBoxButton.OK, MessageBoxImage.Error);
+                isProcess = false;
+                return;
+            }
+            bmp.Save("test.jpg", ImageFormat.Jpeg);
+
+            MessageBox.Show("成功获取图片", "ok", MessageBoxButton.OK, MessageBoxImage.None);
+
+            string filename = "";
+
+            var sender = new GcodeSender();
+            sender.OpenGcodeFile(filename);
+            if (!sender.OpenPort())
+            {
+                MessageBox.Show("获取设备出错", "ok", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            sender.SendFile();
+            sender.ClosePort();
+
+
+            isProcess = false;
+        }
+
+
     }
 }
