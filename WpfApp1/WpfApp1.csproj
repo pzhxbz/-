@@ -56,6 +56,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="GcodeSender.cs" />
+    <Compile Include="MusicPlayer.cs" />
+    <Compile Include="Processor.cs" />
     <Compile Include="Shoter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -104,6 +106,9 @@
     <Resource Include="button.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="loading.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

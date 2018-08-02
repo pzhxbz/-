@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WpfApp1
 {
@@ -90,7 +91,7 @@ namespace WpfApp1
 
 
 
-            Point center = new Point(rect.left + width / 2, rect.top + height / 2);
+            System.Drawing.Point center = new System.Drawing.Point(rect.left + width / 2, rect.top + height / 2);
 
             int padding = 26;
 
@@ -98,7 +99,7 @@ namespace WpfApp1
 
             int realTop, realHeight, realWidth, realLeft;
 
-
+            // MessageBox.Show(height.ToString() + "    " + width.ToString());
             if (scale > 1.5)
             {
                 realTop = rect.top + padding;
@@ -117,7 +118,7 @@ namespace WpfApp1
             Graphics graphics = Graphics.FromImage(bmp);
             // graphics.CopyFromScreen(rect.left, rect.top, 0, 0, new Size(width, height), CopyPixelOperation.SourceCopy);
             // SetWindowPos(guessHandle, HWND_TOPMOST, 1, 1, 1, 1, SWP_NOMOVE | SWP_NOSIZE);
-            graphics.CopyFromScreen(realLeft, realTop, 0, 0, new Size(realWidth, realHeight), CopyPixelOperation.SourceCopy);
+            graphics.CopyFromScreen(realLeft, realTop, 0, 0, new System.Drawing.Size(realWidth, realHeight), CopyPixelOperation.SourceCopy);
             return bmp;
 
         }

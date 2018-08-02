@@ -11,9 +11,11 @@
         Background="{x:Null}"
         AllowsTransparency="True"
         KeyDown="Window_KeyDown"
+       
         >
     <Grid Background="Transparent">
         <Button Background="Transparent" BorderThickness="0"  
+                Name="startButton"
                 Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
                 Click="Button_Click"
                 MouseMove="Button_MouseMove"
@@ -44,7 +46,10 @@
                     </Grid>
                 </ControlTemplate>
             </Button.Template>
-            <Image Name="buttonImage" Opacity="0.3" />
+            <Image Name="buttonImage" Opacity="0.3" 
+                  
+                   
+                   />
 
         </Button>
     </Grid>

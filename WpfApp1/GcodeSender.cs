@@ -17,11 +17,19 @@ namespace WpfApp1
         private bool connected;
         private SerialPort serialPort1;
         private bool dataProcessing;
+        public bool IsFinish = true;
+
+        private bool isStop = false;
+
         public GcodeSender()
         {
             portList = new List<string>();
             foreach (string s in SerialPort.GetPortNames())
-                portList.Add(s);
+            {
+                if (s != "COM1")
+                    portList.Add(s);
+
+            }
             if (portList.Count < 1)
             {
                 logInfo("no device found!");
@@ -63,7 +71,12 @@ namespace WpfApp1
             file.Close();
         }
 
-        public bool SendFile()
+        public void StopSend()
+        {
+            isStop = true;
+        }
+
+        private void sendFileThread()
         {
             try
             {
@@ -76,23 +89,48 @@ namespace WpfApp1
                     {
                         Thread.Sleep(1);
                     }
-                    //bufFree -= (fileLines[fileLinesSent].Length + 1);
-                    //fileLinesSent++;
+                    Thread.Sleep(10);
+                    if (isStop == true)
+                    {
+                        string[] homeGcode = { "G00Z0.0000", "G00X0Y0" };
+                        foreach (var h in homeGcode)
+                        {
+                            serialPort1.Write(h + "\r");
+                            dataProcessing = false;
+                            while (!dataProcessing)
+                            {
+                                Thread.Sleep(1);
+                            }
+                        }
+                        break;
+                    }
                 }
-                //serialPort1.Write("~");
             }
             catch (Exception er)
             {
                 logInfo("Error sending next line");
                 ClosePort();
-                return false;
+                IsFinish = true;
+                //return false;
             }
-            return true;
+            IsFinish = true;
+            //return true;
+        }
+        public void SendFile()
+        {
+            IsFinish = false;
+            isStop = false;
+            ThreadStart childref = new ThreadStart(sendFileThread);
+
+            Thread childThread = new Thread(childref);
+
+            childThread.Start();
+
         }
 
         private void logInfo(String info)
         {
-            Console.Out.WriteLine(info);
+            // Console.Out.WriteLine(info);
         }
 
         public bool OpenPort()
@@ -116,7 +154,11 @@ namespace WpfApp1
                 ClosePort();
                 return (false);
             }
+
         }
+
+
+
         public bool ClosePort()
         {
             try
@@ -146,7 +188,7 @@ namespace WpfApp1
                 try
                 {
                     rxString = serialPort1.ReadTo("\r\n");//read line from grbl, discard CR LF
-                    logInfo("recv  :" + rxString);
+                    //logInfo("recv  :" + rxString);
 
                     dataProcessing = true;
                     //this.Invoke(new EventHandler(dataRx));//tigger rx process 
@@ -155,8 +197,10 @@ namespace WpfApp1
                 catch (Exception errort)
                 {
                     var mens = "Error reading line from serial port";
-                    logInfo(mens);
+                    //logInfo(mens);
                     ClosePort();
+                    isStop = true;
+
                     //err = errort;
                     //this.Invoke(new EventHandler(logErrorThr));
                 }
